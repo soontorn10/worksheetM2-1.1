@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบกิจกรรม: ความเกี่ยวข้องของนาฏศิลป์กับวิชาอื่น</title> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #F8F4FF; /* สีม่วงอ่อน */ } 
+        .page { display: none; }
+        .page.active { display: block; }
+        textarea { min-height: 250px; /* ขยายช่องว่างให้ใหญ่ขึ้น */ }
+        .dashboard-card { background-color: white; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); border: 1px solid #E2E8F0; }
+        
+        /* CSS สำหรับการดาวน์โหลด */
+        .ready-for-capture { width: 1000px !important; padding: 40px !important; box-shadow: none !important; background-color: white !important; }
+        .ready-for-capture .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+        .ready-for-capture .dashboard-full-span { grid-column: 1 / -1 !important; }
+        .ready-for-capture .analysis-box { column-count: 1 !important; } /* ไม่แบ่งคอลัมน์ตอนสรุปผล */
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-2xl shadow-lg">
+            <div id="step-1-indicator" class="step-indicator flex-1 text-center p-3 rounded-xl">
+                <span class="font-bold text-sm md:text-base">1. 🧑‍🏫 ข้อมูลนักเรียน</span>
+            </div>
+            <div class="text-gray-300 mx-2">→</div>
+            <div id="step-2-indicator" class="step-indicator flex-1 text-center p-3 rounded-xl">
+                <span class="font-bold text-sm md:text-base">2. ✍️ วิเคราะห์อิสระ</span>
+            </div>
+            <div class="text-gray-300 mx-2">→</div>
+            <div id="step-3-indicator" class="step-1 flex-1 text-center p-3 rounded-xl">
+                <span class="font-bold text-sm md:text-base">3. 📥 สรุปผลงาน</span>
+            </div>
+        </div>
+
+        <div id="page-1" class="page dashboard-card active">
+             <h1 class="text-3xl font-bold text-purple-600 mb-2">ใบกิจกรรม</h1>
+            <p class="text-xl text-gray-600 mb-6">เรื่อง: ความเกี่ยวข้องของนาฏศิลป์กับวิชาอื่น 🌍 (ศ ๓.๑ ม.๒/๕)</p>
+            <p class="text-lg text-gray-500 mb-8">กรอกข้อมูลให้ครบก่อนเริ่มกิจกรรมนะ</p>
+            
+            <form id="info-form" class="space-y-4">
+                <div><label for="student-name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล <span class="text-red-500">*</span></label><input type="text" id="student-name" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" required></div>
+                <div><label for="student-class" class="block text-sm font-medium text-gray-700 mb-1">ชั้น <span class="text-red-500">*</span></label><input type="text" id="student-class" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" required></div>
+                <div><label for="student-number" class="block text-sm font-medium text-gray-700 mb-1">เลขที่ <span class="text-red-500">*</span></label><input type="number" id="student-number" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" required></div>
+                
+                <button id="btn-to-page-2" type="submit" class="w-full bg-purple-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-purple-600 transition duration-300 text-lg">ถัดไป ➡️</button>
+            </form>
+        </div>
+
+        <div id="page-2" class="page dashboard-card">
+            <form id="worksheet-form" class="space-y-8">
+                
+                <div>
+                    <h1 class="text-3xl font-bold text-purple-600 mb-2">กิจกรรม: นาฏศิลป์เชื่อมโลก</h1>
+                    <p class="text-lg text-gray-600 mb-6">คำชี้แจง: ให้นักเรียน **เลือกวิชาที่ชอบเรียน ๑ วิชา** แล้วทำการวิเคราะห์และศึกษาว่าวิชานาฏศิลป์มีความสัมพันธ์กับวิชาที่นักเรียนชอบอย่างไร</p>
+                    
+                    <div class="mb-6">
+                        <label for="student-subject" class="block text-xl font-semibold text-red-600 mb-2">วิชาที่นักเรียนชื่นชอบที่สุด <span class="text-red-500">*</span></label>
+                        <input type="text" id="student-subject" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 bg-red-50" placeholder="ระบุชื่อวิชาที่ชื่นชอบ (เช่น คณิตศาสตร์, สุขศึกษา, ภาษาจีน, ฯลฯ)" required>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label for="ans-analysis" class="block text-xl font-semibold text-gray-800 mb-2">ความเชื่อมโยงความสัมพันธ์ระหว่างนาฏศิลป์กับวิชาโปรดของคุณ: <span class="text-red-500">*</span></label>
+                            <textarea id="ans-analysis" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" placeholder="วิเคราะห์และบรรยายอย่างละเอียดว่านาฏศิลป์มีความสัมพันธ์กับวิชาโปรดของคุณในมิติใดบ้าง (เช่น เนื้อหา, หลักการ, ประโยชน์, การประยุกต์ใช้) พร้อมยกตัวอย่างประกอบ... (อย่างน้อย 6 บรรทัด)" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-to-page-3" type="submit" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300 text-lg">ส่งคำตอบและสรุปผล 📤</button>
+            </form>
+        </div>
+
+        <div id="page-3" class="page">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-purple-600">✨ สรุปผลการทำกิจกรรม</h1>
+                <p class="text-lg text-gray-500">ตรวจสอบข้อมูลและดาวน์โหลดผลงาน</p>
+            </div>
+            
+            <div id="summary-content" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-center text-purple-600 mb-2">ใบสรุปกิจกรรม</h2>
+                    <p class="text-lg text-center text-gray-600">เรื่อง: ความเกี่ยวข้องของนาฏศิลป์กับวิชาอื่น</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 dashboard-grid">
+                    <div class="dashboard-card h-full border-l-4 border-purple-500 md:col-span-2 dashboard-full-span"> 
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">ข้อมูลนักเรียนและวิชาที่เลือก</h3>
+                        <div class="space-y-3 text-lg grid grid-cols-2 gap-4">
+                            <div><span class="text-gray-500 block text-sm">ชื่อ-นามสกุล</span><span id="summary-name" class="font-semibold text-gray-900"></span></div>
+                            <div><span class="text-gray-500 block text-sm">ชั้น / เลขที่</span><span id="summary-class-num" class="font-semibold text-gray-900"></span></div>
+                            <div class="md:col-span-2"><span class="text-gray-500 block text-sm">วิชาโปรดที่เลือกวิเคราะห์</span><span id="summary-subject" class="font-bold text-red-600 text-xl"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card md:col-span-2 dashboard-full-span border-l-4 border-green-500"> 
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">ผลการวิเคราะห์ความสัมพันธ์</h3>
+                        <div class="analysis-box bg-gray-50 p-4 rounded-md">
+                            <p id="summary-analysis" class="text-gray-700 whitespace-pre-wrap text-base leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="btn-download" class="w-full bg-purple-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-purple-600 transition duration-300 text-lg mt-6">ดาวน์โหลดรูปภาพสรุปกิจกรรม 📥</button>
+            <button id="btn-reset" class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-red-600 transition duration-300 text-lg mt-4">🤯 เริ่มใหม่ทั้งหมด (ลบข้อมูลและกลับไปหน้าแรก)</button>
+        </div>
+
+        <footer class="text-center p-4 mt-8 bg-white rounded-2xl shadow-lg">
+            <p class="text-sm text-gray-600">พัฒนาระบบโดย: นายสุนทร ฉอมไธสง (และ AI Gemini 🤖)</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. DOM Elements ---
+            const pages = {
+                'page-1': document.getElementById('page-1'),
+                'page-2': document.getElementById('page-2'),
+                'page-3': document.getElementById('page-3')
+            };
+            const stepIndicators = {
+                'page-1': document.getElementById('step-1-indicator'),
+                'page-2': document.getElementById('step-2-indicator'),
+                'page-3': document.getElementById('step-3-indicator')
+            };
+            // ข้อมูลนักเรียน
+            const infoForm = document.getElementById('info-form');
+            const studentNameInput = document.getElementById('student-name');
+            const studentClassInput = document.getElementById('student-class');
+            const studentNumberInput = document.getElementById('student-number');
+            
+            // ข้อมูลกิจกรรม
+            const worksheetForm = document.getElementById('worksheet-form');
+            const studentSubjectInput = document.getElementById('student-subject'); 
+            const ansAnalysisInput = document.getElementById('ans-analysis'); // ⭐️ ช่องวิเคราะห์เดียว
+
+            // ข้อมูลสรุป (Summary)
+            const btnDownload = document.getElementById('btn-download');
+            const btnReset = document.getElementById('btn-reset');
+            const summaryName = document.getElementById('summary-name');
+            const summaryClassNum = document.getElementById('summary-class-num'); // รวมชั้น/เลขที่
+            const summarySubject = document.getElementById('summary-subject'); 
+            const summaryAnalysis = document.getElementById('summary-analysis'); // ช่องวิเคราะห์เดียว
+            
+            const confettiElement = document.getElementById('confetti-canvas');
+            let confettiInstance = null;
+
+            // --- 2. Page Navigation ---
+            function showPage(pageId) {
+                Object.values(pages).forEach(page => page.classList.remove('active'));
+                if (pages[pageId]) {
+                    pages[pageId].classList.add('active');
+                }
+                Object.values(stepIndicators).forEach(indicator => {
+                    indicator.classList.remove('bg-purple-500', 'text-white');
+                    indicator.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                if (stepIndicators[pageId]) {
+                    stepIndicators[pageId].classList.add('bg-purple-500', 'text-white');
+                    stepIndicators[pageId].classList.remove('bg-gray-200', 'text-gray-700');
+                }
+                
+                // ไม่มีการยิง Confetti (เพราะไม่มีคะแนน)
+                if (confettiInstance) {
+                    confettiInstance.clear();
+                }
+
+                sessionStorage.setItem('currentPage', pageId);
+                window.scrollTo(0, 0);
+            }
+
+            // --- 3. Data Loading ---
+            function loadDataFromSession() {
+                studentNameInput.value = sessionStorage.getItem('studentName') || '';
+                studentClassInput.value = sessionStorage.getItem('studentClass') || '';
+                studentNumberInput.value = sessionStorage.getItem('studentNumber') || '';
+                studentSubjectInput.value = sessionStorage.getItem('studentSubject') || ''; 
+                ansAnalysisInput.value = sessionStorage.getItem('answerAnalysis') || ''; 
+            }
+
+            // --- 4. Populate Summary (Page 3) (ลบส่วนคะแนนออก) ---
+            function populateSummary() {
+                // ข้อมูลนักเรียน
+                const name = sessionStorage.getItem('studentName') || 'N/A';
+                const sClass = sessionStorage.getItem('studentClass') || 'N/A';
+                const sNumber = sessionStorage.getItem('studentNumber') || 'N/A';
+                const sSubject = sessionStorage.getItem('studentSubject') || '(ไม่ได้เลือก)'; 
+                const sAnalysis = sessionStorage.getItem('answerAnalysis') || '(ไม่ได้วิเคราะห์)';
+
+                summaryName.textContent = name;
+                summaryClassNum.textContent = `${sClass} / ${sNumber}`;
+                summarySubject.textContent = sSubject;
+                summaryAnalysis.textContent = sAnalysis;
+
+                // ลบ Logic คะแนนและ Answer Key ออกทั้งหมด
+            }
+
+            // --- 5. Event Listeners ---
+            infoForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                sessionStorage.setItem('studentName', studentNameInput.value);
+                sessionStorage.setItem('studentClass', studentClassInput.value);
+                sessionStorage.setItem('studentNumber', studentNumberInput.value);
+                showPage('page-2');
+            });
+            worksheetForm.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                sessionStorage.setItem('studentSubject', studentSubjectInput.value);
+                sessionStorage.setItem('answerAnalysis', ansAnalysisInput.value); // ⭐️ เก็บคำตอบเดียว
+                                
+                populateSummary(); 
+                showPage('page-3'); 
+            });
+            btnDownload.addEventListener('click', () => {
+                btnDownload.disabled = true;
+                btnDownload.textContent = 'กำลังประมวลผล... ⌛';
+                captureAndDownloadWithWatermark();
+            });
+            btnReset.addEventListener('click', () => {
+                if (confirm('คุณแน่ใจหรือไม่ว่าต้องการเริ่มใหม่ทั้งหมด? ข้อมูลที่กรอกไว้จะถูกลบทั้งหมด')) {
+                    sessionStorage.clear();
+                    location.reload();
+                }
+            });
+
+            // --- 6. html2canvas + Watermark Logic (คงไว้ตามเดิม) ---
+            async function captureAndDownloadWithWatermark() {
+                const elementToCapture = document.getElementById('summary-content');
+
+                elementToCapture.classList.add('ready-for-capture');
+
+                try {
+                    const canvas = await html2canvas(elementToCapture, {
+                        scale: 1, 
+                        useCORS: true,
+                        backgroundColor: '#ffffff' 
+                    });
+
+                    elementToCapture.classList.remove('ready-for-capture');
+
+                    // วาดลายน้ำ
+                    const ctx = canvas.getContext('2d');
+                    const name = sessionStorage.getItem('studentName') || '';
+                    const sClass = sessionStorage.getItem('studentClass') || '';
+                    const sNumber = sessionStorage.getItem('studentNumber') || '';
+                    const watermarkText = `${name} ${sClass} เลขที่ ${sNumber}`;
+
+                    const fontSize = 60; 
+                    ctx.font = `bold ${fontSize}px Sarabun, sans-serif`;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle'; 
+
+                    ctx.save();
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(-45 * Math.PI / 180); 
+                    ctx.fillText(watermarkText, 0, 0);
+                    ctx.restore();
+                    
+                    const image = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = image;
+                    link.download = `สรุปกิจกรรม_นาฏศิลป์เชื่อมโลก_${name.replace(/\s/g, '_')}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    btnDownload.disabled = false;
+                    btnDownload.textContent = 'ดาวน์โหลดรูปภาพสรุปกิจกรรม 📥';
+
+                } catch (error) {
+                    elementToCapture.classList.remove('ready-for-capture');
+                    btnDownload.disabled = false;
+                    btnDownload.textContent = 'เกิดข้อผิดพลาดในการดาวน์โหลด ⚠️';
+                    console.error('Download error:', error);
+                    alert('เกิดข้อผิดพลาดในการสร้างรูปภาพ กรุณาลองใหม่อีกครั้ง');
+                }
+            }
+
+            // Initialize
+            loadDataFromSession();
+            const storedPage = sessionStorage.getItem('currentPage') || 'page-1';
+            showPage(storedPage);
+        });
+    </script>
+</body>
+</html>
